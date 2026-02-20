@@ -118,12 +118,12 @@ elif mod == "4 - Algoritma Karşılaştırma":
     import matplotlib.pyplot as plt
     import numpy as np
 
-    if st.button("5000 Oyun Simülasyonu Başlat"):
+    if st.button("1000 Oyun Simülasyonu Başlat"):
 
         random_results = []
         smart_results = []
 
-        for _ in range(5000):
+        for _ in range(1000):
             sayi = random.randint(1, 100)
 
             # RANDOM
@@ -167,6 +167,7 @@ elif mod == "4 - Algoritma Karşılaştırma":
         plt.xlabel("Tahmin Sayısı")
         plt.ylabel("Frekans")
         st.pyplot(plt)
+
 
 
 
