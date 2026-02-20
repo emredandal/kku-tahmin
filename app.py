@@ -1,71 +1,93 @@
+import streamlit as st
 import random
 
-# ======================
-# OYUN MOTORU
-# ======================
+st.title("KKU Tahmin-SerapHocaicindir-Emredandal")
 
-def play_game(player_type):
-    print("\nKKU tahmin- serap hoca icindir- emredandal")
+# Mod seçimi
+mod = st.radio(
+    "Oyuncu Tipini Seç:",
+    ["1 - İnsan Oyuncu", "2 - Random Bilgisyar", "3 - Akıllı Bilgisayar"]
+)
 
-    sayı = random.randint(1, 100)
-    tahmin_hakkı = 10
+# Session state ile sayı saklama
+if "sayi" not in st.session_state:
+    st.session_state.sayi = random.randint(1, 100)
+    st.session_state.low = 1
+    st.session_state.high = 100
+    st.session_state.hak = 5
 
-    low = 1
-    high = 100
+# ==========================
+# 1️⃣ İnsan Oyuncu
+# ==========================
+if mod == "1 - İnsan Oyuncu":
 
-    while tahmin_hakkı > 0:
+    tahmin = st.number_input("Tahminini gir:", 1, 100)
 
-        # İnsan oyuncu
-        if player_type == "human":
-            tahmin = int(input("Tahmininizi girin: "))
+    if st.button("Tahmin Et"):
+        if tahmin == st.session_state.sayi:
+            st.success("Doğru Tahmin Hocamm :)")
+            st.session_state.clear()
 
-        # Random bilgisayar
-        elif player_type == "random":
-            tahmin = random.randint(1, 100)
-            print("Bilgisayar tahmini:", tahmin)
-
-        # Akıllı bilgisayar (binary search)
-        elif player_type == "smart":
-            tahmin = (low + high) // 2
-            print("Akıllı tahmin:", tahmin)
-
-        else:
-            print("Geçersiz oyuncu tipi.")
-            return
-
-        # Kontrol
-        if tahmin == sayı:
-            print("🎉 Doğru tahmin!")
-            return
-
-        elif tahmin < sayı:
-            print("Daha büyük bir sayı girin.")
-            low = tahmin + 1
+        elif tahmin < st.session_state.sayi:
+            st.warning("Daha büyük sayı girin hocam.")
 
         else:
-            print("Daha küçük bir sayı girin.")
-            high = tahmin - 1
+            st.warning("Daha küçük sayı girin hocam.")
 
-        tahmin_hakkı -= 1
+        st.session_state.hak -= 1
+        st.write("Kalan hak:", st.session_state.hak)
 
-    print("❌ Tahmin hakkı bitti! Doğru sayı:", sayı)
+        if st.session_state.hak == 0:
+            st.error(f" Bitti! Doğru sayı {st.session_state.sayi}")
+            st.session_state.clear()
 
 
-# ======================
-# SEÇİM MENÜSÜ
-# ======================
+# ==========================
+# 2️⃣ Random Bilgisayar
+# ==========================
+elif mod == "2 - Random Bilgisayar":
 
-print("1 - İnsan Oyuncu")
-print("2 - Random Bilgisayar")
-print("3 - Akıllı Bilgisayar")
+    if st.button("Bilgisayar Tahmin Etsin"):
 
-secim = input("Seçiminiz: ")
+        tahmin = random.randint(
+            st.session_state.low,
+            st.session_state.high
+        )
 
-if secim == "1":
-    play_game("human")
-elif secim == "2":
-    play_game("random")
-elif secim == "3":
-    play_game("smart")
-else:
-    print("Hatalı seçim.")
+        st.write("Random tahmin:", tahmin)
+
+        if tahmin == st.session_state.sayi:
+            st.success(" Bilgisayar buldu!")
+            st.session_state.clear()
+
+        elif tahmin < st.session_state.sayi:
+            st.session_state.low = tahmin + 1
+            st.warning("Daha büyük.")
+
+        else:
+            st.session_state.high = tahmin - 1
+            st.warning("Daha küçük.")
+
+
+# ==========================
+# 3️⃣ Akıllı Bilgisayar
+# ==========================
+elif mod == "3 - Akıllı Bilgisayar":
+
+    if st.button("Akıllı Tahmin Yap"):
+
+        tahmin = (st.session_state.low + st.session_state.high) // 2
+
+        st.write("Akıllı tahmin:", tahmin)
+
+        if tahmin == st.session_state.sayi:
+            st.success("Akıllı bilgisayar buldu!")
+            st.session_state.clear()
+
+        elif tahmin < st.session_state.sayi:
+            st.session_state.low = tahmin + 1
+            st.warning("Daha büyük.")
+
+        else:
+            st.session_state.high = tahmin - 1
+            st.warning("Daha küçük.")
