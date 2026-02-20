@@ -1,101 +1,99 @@
+import streamlit as st
 import random
-import streamlit as st
 import matplotlib.pyplot as plt
 
-# Sayı aralığı
-MIN = 1
-MAX = 1_000_000
+st.title("KKU Tahmin serap hoca icindir - Emredandal")
 
-st.title("Algoritma Performans Karşılaştırması")
-st.write("1 milyon ihtimal arasında Random vs Smart tahmin karşılaştırması")
+# MOD SEÇİMİ
+mod = st.radio(
+    "Oyun Modunu Seç:",
+    ["1 - Normal Oyun", "2 - Simülasyon", "3 - Akıllı Bilgisayar"]
+)
 
-# --------------------------
-# RANDOM OYUNCU
-# --------------------------
-def random_player(secret):
-    low = MIN
-    high = MAX
-    attempts = 0
+# ---------------------------
+# 1️⃣ NORMAL OYUN
+# ---------------------------
+if mod == "1 - Normal Oyun":
 
-    while True:
-        guess = random.randint(low, high)
-        attempts += 1
+    if "sayi" not in st.session_state:
+        st.session_state.sayi = random.randint(1, 100)
+        st.session_state.hak = 5
 
-        if guess == secret:
-            return attempts
-        elif guess < secret:
-            low = guess + 1
+    tahmin = st.number_input("Tahminini gir:", min_value=1, max_value=100, step=1)
+
+    if st.button("Tahmin Et"):
+
+        if tahmin == st.session_state.sayi:
+            st.success(" Tebrikler doğru tahmin!")
+            st.session_state.clear()
+
+        elif tahmin < st.session_state.sayi:
+            st.warning("Daha büyük sayı gir.")
+
         else:
-            high = guess - 1
+            st.warning("Daha küçük sayı gir.")
+
+        st.session_state.hak -= 1
+
+        if st.session_state.hak == 0:
+            st.error(f" Hakkın bitti! Doğru sayı {st.session_state.sayi}")
+            st.session_state.clear()
 
 
-# --------------------------
-# SMART OYUNCU (Binary Search)
-# --------------------------
-def smart_player(secret):
-    low = MIN
-    high = MAX
-    attempts = 0
+# ---------------------------
+# 2️⃣ SİMÜLASYON
+# ---------------------------
+elif mod == "2 - Simülasyon":
 
-    while True:
-        guess = (low + high) // 2
-        attempts += 1
+    if st.button("Simülasyonu Başlat"):
 
-        if guess == secret:
-            return attempts
-        elif guess < secret:
-            low = guess + 1
-        else:
-            high = guess - 1
+        deneme_sayilari = []
+
+        for _ in range(1000):
+            sayi = random.randint(1, 100)
+            alt = 1
+            ust = 100
+            deneme = 0
+
+            while True:
+                deneme += 1
+                tahmin = (alt + ust) // 2
+
+                if tahmin == sayi:
+                    break
+                elif tahmin < sayi:
+                    alt = tahmin + 1
+                else:
+                    ust = tahmin - 1
+
+            deneme_sayilari.append(deneme)
+
+        plt.hist(deneme_sayilari)
+        plt.xlabel("Tahmin Sayısı")
+        plt.ylabel("Frekans")
+        st.pyplot(plt)
 
 
-# --------------------------
-# SİMÜLASYON
-# --------------------------
-def simulate(player_func, games=200):
-    total = 0
-    for _ in range(games):
-        secret = random.randint(MIN, MAX)
-        total += player_func(secret)
-    return total / games
+# ---------------------------
+# 3️⃣ AKILLI BİLGİSAYAR
+# ---------------------------
+elif mod == "3 - Akıllı Bilgisayar":
 
+    if st.button("Bilgisayar Tahmin Etsin"):
 
-# --------------------------
-# BUTON
-# --------------------------
-if st.button("Simülasyonu Başlat"):
+        sayi = random.randint(1, 100)
+        alt = 1
+        ust = 100
+        deneme = 0
 
-    st.write("Simülasyon çalışıyor...")
+        while True:
+            deneme += 1
+            tahmin = (alt + ust) // 2
 
-    random_avg = simulate(random_player)
-    smart_avg = simulate(smart_player)
-
-    st.success("Simülasyon tamamlandı!")
-
-    st.write("Random Ortalama Deneme:", round(random_avg, 2))
-    st.write("Smart Ortalama Deneme:", round(smart_avg, 2))
-
-    players = ["Random", "Smart"]
-    averages = [random_avg, smart_avg]
-
-    fig, ax = plt.subplots()
-    ax.bar(players, averages)
-    ax.set_ylabel("Ortalama Deneme Sayısı")
-    ax.set_title("1.000.000 Arasında Tahmin Performansı")
-
-    st.pyplot(fig)
-
-import streamlit as st
-import matplotlib.pyplot as plt
-import numpy as np
-
-st.title("Basit Simülasyon")
-
-n = st.slider("Kaç kez denensin?", 10, 10000, 1000)
-
-data = np.random.normal(0, 1, n)
-
-fig, ax = plt.subplots()
-ax.hist(data, bins=30)
-
-st.pyplot(fig)
+            if tahmin == sayi:
+                st.success(f"Bilgisayar {deneme} tahminde buldu!")
+                break
+            elif tahmin < sayi:
+                alt = tahmin + 1
+            else:
+                ust = tahmin - 1
