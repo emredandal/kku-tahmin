@@ -1,93 +1,104 @@
 import streamlit as st
 import random
+import time
 
-st.title("KKU Tahmin-SerapHocaicindir-Emredandal")
+st.title("KKU-Tahmin-Serap hocam icindir-Emredandal")
 
-# Mod seçimi
+# =========================
+# MOD SEÇİMİ
+# =========================
 mod = st.radio(
     "Oyuncu Tipini Seç:",
-    ["1 - İnsan Oyuncu", "2 - Random Bilgisyar", "3 - Akıllı Bilgisayar"]
+    ["1 - İnsan Oyuncu", "2 - Random Bilgisayar", "3 - Akıllı Bilgisayar"]
 )
 
-# Session state ile sayı saklama
-if "sayi" not in st.session_state:
-    st.session_state.sayi = random.randint(1, 100)
-    st.session_state.low = 1
-    st.session_state.high = 100
-    st.session_state.hak = 5
-
-# ==========================
-# 1️⃣ İnsan Oyuncu
-# ==========================
+# =========================
+# 1️⃣ İNSAN OYUNCU
+# =========================
 if mod == "1 - İnsan Oyuncu":
 
-    tahmin = st.number_input("Tahminini gir:", 1, 100)
+    if "sayi" not in st.session_state:
+        st.session_state.sayi = random.randint(1, 100)
+        st.session_state.hak = 5
+
+    tahmin = st.number_input("Tahminini gir:", 1, 100, step=1)
 
     if st.button("Tahmin Et"):
+
         if tahmin == st.session_state.sayi:
-            st.success("Doğru Tahmin Hocamm :)")
+            st.success("Doğru tahmin oldu serap hocam :)")
             st.session_state.clear()
 
         elif tahmin < st.session_state.sayi:
-            st.warning("Daha büyük sayı girin hocam.")
+            st.warning("hocam daha büyük sayı girin.")
 
         else:
-            st.warning("Daha küçük sayı girin hocam.")
+            st.warning("hocam daha küçük sayı girin.")
 
         st.session_state.hak -= 1
         st.write("Kalan hak:", st.session_state.hak)
 
         if st.session_state.hak == 0:
-            st.error(f" Bitti! Doğru sayı {st.session_state.sayi}")
+            st.error(f"Maalesef tahmin hakkı bitti hocam, Doğru sayı {st.session_state.sayi}")
             st.session_state.clear()
 
 
-# ==========================
-# 2️⃣ Random Bilgisayar
-# ==========================
+# =========================
+# 2️⃣ RANDOM BİLGİSAYAR
+# =========================
 elif mod == "2 - Random Bilgisayar":
 
-    if st.button("Bilgisayar Tahmin Etsin"):
+    if st.button("Başlat"):
 
-        tahmin = random.randint(
-            st.session_state.low,
-            st.session_state.high
-        )
+        sayi = random.randint(1, 100)
+        output = ""
+        low = 1
+        high = 100
 
-        st.write("Random tahmin:", tahmin)
+        for _ in range(5):
+            tahmin = random.randint(low, high)
+            output += f"Random tahmin: {tahmin}\n"
 
-        if tahmin == st.session_state.sayi:
-            st.success(" Bilgisayar buldu!")
-            st.session_state.clear()
-
-        elif tahmin < st.session_state.sayi:
-            st.session_state.low = tahmin + 1
-            st.warning("Daha büyük.")
+            if tahmin == sayi:
+                output += "Doğru tahmin!\n"
+                break
+            elif tahmin < sayi:
+                output += "Daha büyük bir sayı.\n"
+                low = tahmin + 1
+            else:
+                output += "Daha küçük bir sayı.\n"
+                high = tahmin - 1
 
         else:
-            st.session_state.high = tahmin - 1
-            st.warning("Daha küçük.")
+            output += f"Bulamadı! Doğru sayı {sayi}\n"
+
+        st.text(output)
 
 
-# ==========================
-# 3️⃣ Akıllı Bilgisayar
-# ==========================
+# =========================
+# 3️⃣ AKILLI BİLGİSAYAR
+# =========================
 elif mod == "3 - Akıllı Bilgisayar":
 
-    if st.button("Akıllı Tahmin Yap"):
+    if st.button("Başlat"):
 
-        tahmin = (st.session_state.low + st.session_state.high) // 2
+        sayi = random.randint(1, 100)
+        low = 1
+        high = 100
+        output = ""
 
-        st.write("Akıllı tahmin:", tahmin)
+        while True:
+            tahmin = (low + high) // 2
+            output += f"Akıllı tahmin: {tahmin}\n"
 
-        if tahmin == st.session_state.sayi:
-            st.success("Akıllı bilgisayar buldu!")
-            st.session_state.clear()
+            if tahmin == sayi:
+                output += "Doğru tahmin!\n"
+                break
+            elif tahmin < sayi:
+                output += "Daha büyük bir sayı.\n"
+                low = tahmin + 1
+            else:
+                output += "Daha küçük bir sayı.\n"
+                high = tahmin - 1
 
-        elif tahmin < st.session_state.sayi:
-            st.session_state.low = tahmin + 1
-            st.warning("Daha büyük.")
-
-        else:
-            st.session_state.high = tahmin - 1
-            st.warning("Daha küçük.")
+        st.text(output)
