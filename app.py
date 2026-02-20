@@ -1,99 +1,71 @@
-import streamlit as st
 import random
-import matplotlib.pyplot as plt
 
-st.title("KKU Tahmin serap hoca icindir - Emredandal")
+# ======================
+# OYUN MOTORU
+# ======================
 
-# MOD SEÇİMİ
-mod = st.radio(
-    "Oyun Modunu Seç:",
-    ["1 - Normal Oyun", "2 - Simülasyon", "3 - Akıllı Bilgisayar"]
-)
+def play_game(player_type):
+    print("\nKKU tahmin- serap hoca icindir- emredandal")
 
-# ---------------------------
-# 1️⃣ NORMAL OYUN
-# ---------------------------
-if mod == "1 - Normal Oyun":
+    sayı = random.randint(1, 100)
+    tahmin_hakkı = 10
 
-    if "sayi" not in st.session_state:
-        st.session_state.sayi = random.randint(1, 100)
-        st.session_state.hak = 5
+    low = 1
+    high = 100
 
-    tahmin = st.number_input("Tahminini gir:", min_value=1, max_value=100, step=1)
+    while tahmin_hakkı > 0:
 
-    if st.button("Tahmin Et"):
+        # İnsan oyuncu
+        if player_type == "human":
+            tahmin = int(input("Tahmininizi girin: "))
 
-        if tahmin == st.session_state.sayi:
-            st.success(" Tebrikler doğru tahmin!")
-            st.session_state.clear()
+        # Random bilgisayar
+        elif player_type == "random":
+            tahmin = random.randint(1, 100)
+            print("Bilgisayar tahmini:", tahmin)
 
-        elif tahmin < st.session_state.sayi:
-            st.warning("Daha büyük sayı gir.")
+        # Akıllı bilgisayar (binary search)
+        elif player_type == "smart":
+            tahmin = (low + high) // 2
+            print("Akıllı tahmin:", tahmin)
 
         else:
-            st.warning("Daha küçük sayı gir.")
+            print("Geçersiz oyuncu tipi.")
+            return
 
-        st.session_state.hak -= 1
+        # Kontrol
+        if tahmin == sayı:
+            print("🎉 Doğru tahmin!")
+            return
 
-        if st.session_state.hak == 0:
-            st.error(f" Hakkın bitti! Doğru sayı {st.session_state.sayi}")
-            st.session_state.clear()
+        elif tahmin < sayı:
+            print("Daha büyük bir sayı girin.")
+            low = tahmin + 1
 
+        else:
+            print("Daha küçük bir sayı girin.")
+            high = tahmin - 1
 
-# ---------------------------
-# 2️⃣ SİMÜLASYON
-# ---------------------------
-elif mod == "2 - Simülasyon":
+        tahmin_hakkı -= 1
 
-    if st.button("Simülasyonu Başlat"):
-
-        deneme_sayilari = []
-
-        for _ in range(1000):
-            sayi = random.randint(1, 100)
-            alt = 1
-            ust = 100
-            deneme = 0
-
-            while True:
-                deneme += 1
-                tahmin = (alt + ust) // 2
-
-                if tahmin == sayi:
-                    break
-                elif tahmin < sayi:
-                    alt = tahmin + 1
-                else:
-                    ust = tahmin - 1
-
-            deneme_sayilari.append(deneme)
-
-        plt.hist(deneme_sayilari)
-        plt.xlabel("Tahmin Sayısı")
-        plt.ylabel("Frekans")
-        st.pyplot(plt)
+    print("❌ Tahmin hakkı bitti! Doğru sayı:", sayı)
 
 
-# ---------------------------
-# 3️⃣ AKILLI BİLGİSAYAR
-# ---------------------------
-elif mod == "3 - Akıllı Bilgisayar":
+# ======================
+# SEÇİM MENÜSÜ
+# ======================
 
-    if st.button("Bilgisayar Tahmin Etsin"):
+print("1 - İnsan Oyuncu")
+print("2 - Random Bilgisayar")
+print("3 - Akıllı Bilgisayar")
 
-        sayi = random.randint(1, 100)
-        alt = 1
-        ust = 100
-        deneme = 0
+secim = input("Seçiminiz: ")
 
-        while True:
-            deneme += 1
-            tahmin = (alt + ust) // 2
-
-            if tahmin == sayi:
-                st.success(f"Bilgisayar {deneme} tahminde buldu!")
-                break
-            elif tahmin < sayi:
-                alt = tahmin + 1
-            else:
-                ust = tahmin - 1
+if secim == "1":
+    play_game("human")
+elif secim == "2":
+    play_game("random")
+elif secim == "3":
+    play_game("smart")
+else:
+    print("Hatalı seçim.")
