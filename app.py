@@ -7,7 +7,7 @@ st.title("KKU-Tahmin-Serap hocam icindir-Emredandal")
 # =========================
 # MOD SEÇİMİ
 # =========================
-    mod = st.radio(
+mod = st.radio(
     "Oyuncu Tipini Seç:",
     [
         "1 - İnsan Oyuncu",
@@ -167,5 +167,6 @@ elif mod == "4 - Algoritma Karşılaştırma":
         plt.xlabel("Tahmin Sayısı")
         plt.ylabel("Frekans")
         st.pyplot(plt)
+
 
 
