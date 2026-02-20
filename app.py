@@ -7,9 +7,14 @@ st.title("KKU-Tahmin-Serap hocam icindir-Emredandal")
 # =========================
 # MOD SEÇİMİ
 # =========================
-mod = st.radio(
+    mod = st.radio(
     "Oyuncu Tipini Seç:",
-    ["1 - İnsan Oyuncu", "2 - Random Bilgisayar", "3 - Akıllı Bilgisayar"]
+    [
+        "1 - İnsan Oyuncu",
+        "2 - Random Bilgisayar",
+        "3 - Akıllı Bilgisayar",
+        "4 - Algoritma Karşılaştırma"
+    ]
 )
 
 # =========================
@@ -102,3 +107,65 @@ elif mod == "3 - Akıllı Bilgisayar":
                 high = tahmin - 1
 
         st.text(output)
+
+
+# =========================
+# 4️⃣ ALGORİTMA KARŞILAŞTIRMA
+# =========================
+
+elif mod == "4 - Algoritma Karşılaştırma":
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    if st.button("5000 Oyun Simülasyonu Başlat"):
+
+        random_results = []
+        smart_results = []
+
+        for _ in range(5000):
+            sayi = random.randint(1, 100)
+
+            # RANDOM
+            deneme = 0
+            while True:
+                deneme += 1
+                tahmin = random.randint(1, 100)
+                if tahmin == sayi:
+                    break
+            random_results.append(deneme)
+
+            # SMART (Binary Search)
+            low = 1
+            high = 100
+            deneme = 0
+
+            while True:
+                deneme += 1
+                tahmin = (low + high) // 2
+
+                if tahmin == sayi:
+                    break
+                elif tahmin < sayi:
+                    low = tahmin + 1
+                else:
+                    high = tahmin - 1
+
+            smart_results.append(deneme)
+
+        random_avg = np.mean(random_results)
+        smart_avg = np.mean(smart_results)
+
+        st.subheader("📊 Ortalama Tahmin Sayıları")
+        st.write(f"Random Ortalama: {round(random_avg,2)}")
+        st.write(f"Akıllı Ortalama: {round(smart_avg,2)}")
+
+        st.success(f"Akıllı algoritma yaklaşık {round(random_avg/smart_avg,1)} kat daha verimli!")
+
+        plt.hist(random_results, alpha=0.6)
+        plt.hist(smart_results, alpha=0.6)
+        plt.xlabel("Tahmin Sayısı")
+        plt.ylabel("Frekans")
+        st.pyplot(plt)
+
+
